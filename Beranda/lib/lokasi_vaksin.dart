@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'tambahLokasi.dart';
+
 class LokasiVaksinPage extends StatefulWidget {
   @override
   State<LokasiVaksinPage> createState() => _LokasiVaksinPageState();
@@ -79,6 +81,20 @@ class _LokasiVaksinPageState extends State<LokasiVaksinPage> {
           },
         ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text('Tambah Lokasi'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        foregroundColor: Colors.white,
+        backgroundColor: const Color(0xffffb1b1),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => tambahLokasi()),
+          );
+        },
       ),
     );
   }
