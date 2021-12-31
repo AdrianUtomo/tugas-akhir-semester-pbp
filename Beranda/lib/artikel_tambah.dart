@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ArtikelTambah extends StatelessWidget {
   const ArtikelTambah({Key? key}) : super(key: key);
@@ -29,15 +30,20 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
   TextEditingController slugField = TextEditingController();
 
   Future<void> submit(BuildContext context) async {
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
     final response = await http.post(
         Uri.parse("https://vaksinfo.herokuapp.com/artikel/article_flutter"),
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(<String, dynamic>{
           'title': titleField.text,
           'body': bodyField.text,
+          'pubDate': formattedDate,
           'imageUrl': imageUrlField.text,
           'slug': slugField.text,
         }));
+    print(response.body);
   }
 
   @override
