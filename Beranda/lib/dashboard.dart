@@ -1,6 +1,5 @@
-import 'dart:convert';
-
-import 'package:beranda/user_model.dart';
+import 'package:beranda/api/api.dart';
+import 'package:beranda/models/feedback.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -8,16 +7,20 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'artikel.dart';
 import 'main.dart';
 import 'package:provider/provider.dart';
-import 'cookierequest.dart';
 import 'login.dart';
 import 'package:http/http.dart' as http;
+import 'hasil_feedback.dart';
 
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: new MyDashboardPage(),
+    // return new MaterialApp(
+    return ChangeNotifierProvider(
+        create: (context) => FeedbackProvider(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: new MyDashboardPage(),
+        ),
     );
   }
 }
@@ -25,24 +28,6 @@ class DashboardPage extends StatelessWidget {
 class MyDashboardPage extends StatefulWidget {
   @override
   _MyDashboardPageState createState() => new _MyDashboardPageState();
-}
-
-class getRequest {
-  static var request = null;
-}
-
-Future<UserModel> createUser(String nama, String email, String komentar) async{
-  final String apiUrl = "https://vaksinfo.herokuapp.com/authentication/json_fb";
-
-  final response2 = await http.post(Uri.parse(apiUrl), body: {
-    "comments": komentar,
-    "name": nama,
-    "email": email
-  });
-
-  final String responseString = response2.body;
-
-  return userModelFromJson(responseString);
 }
 
 class _MyDashboardPageState extends State<MyDashboardPage> {
@@ -64,12 +49,26 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
   String email = "";
   String komentar = "";
 
-  late UserModel _user;
+  void onAdd() {
+    final String textValName = myController.text;
+    final String textValEmail = myController2.text;
+    final String textValComments = myController3.text;
+
+    if (textValName.isNotEmpty && textValEmail.isNotEmpty && textValComments.isNotEmpty) {
+      final Feedback2 feedback2 = Feedback2(
+          id: 10,
+          name: textValName,
+          email: textValEmail,
+          comments: textValComments,
+      );
+
+      Provider.of<FeedbackProvider>(this.context, listen: false).addFeedback(feedback2);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     var container;
-    getRequest.request = context.watch<CookieRequest>();
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
@@ -85,7 +84,6 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                   enableInfiniteScroll: false,
                   enlargeCenterPage: true,
                   enlargeStrategy: CenterPageEnlargeStrategy.height,
-                  // reverse: true,
                   autoPlayInterval: Duration(seconds: 3),
                   onPageChanged: (index, reason) =>
                       setState(() => activeIndex = index),
@@ -110,8 +108,7 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                     SizedBox(width: 4.0),
                     InkWell(
                       onTap: () {
-                        // Navigator.pushNamed(context, '/artikel');
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ArtikelPage()),); // Masih belum mau ke page artikel sesungguhnya
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => ArtikelPage()),);
                         currentPage = DrawerSections.artikel;
                         container = ArtikelPage();
 
@@ -141,7 +138,7 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                 padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
                 child: Center(
                   child: Text(
-                    'Lorem Ipsum is simply dummy text of the printing and typesetting \nindustry. Lorem Ipsum has been the industrys standard dummy \ntext ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
+                    'Vaksinfo adalah sebuah platform yang menyediakan berbagai macam informasi, diantaranya artikel atau berita terkait kondisi pandemi, informasi mengenai vaksin, baik lokasi penyelenggaraan vaksinasi berada, maupun pengetahuan mengeani jenis-jenis vaksin, dan data statistik yang terdiri dari jumlah vaksin yang telah diberikan kepada masyarakat, sasaran jumlah vaksinasi Covid-19 berdasarkan demografis, dan lain sebagainya. Selain itu, platform ini menyediakan fitur tanya jawab untuk melayani rasa keingintahuan pangguna.',
                     style: TextStyle(fontFamily: 'Montserrat', fontSize: 15),
                     textAlign: TextAlign.center,
                   ),
@@ -194,41 +191,8 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                         ),
                       ),
                     ),
-                    // Padding(padding: EdgeInsets.only(top: 25.0)),
-                    // Row(
-                    //     children: <Widget> [
-                    //       Radio(
-                    //           value: 'TP',
-                    //           groupValue: colorGroupValue,
-                    //           onChanged: (val) {
-                    //             setState(() {
-                    //               colorGroupValue = val as String;
-                    //             });
-                    //
-                    //           }
-                    //       ),
-                    //       Text("Tidak Puas :("),
-                    //     ]
-                    // ),
-                    // Row(
-                    //     children: <Widget> [
-                    //       Radio(
-                    //           value: 'P',
-                    //           groupValue: colorGroupValue,
-                    //           onChanged: (val) {
-                    //             setState(() {
-                    //               colorGroupValue = val as String;
-                    //             });
-                    //           }
-                    //       ),
-                    //       Text("Puas :)"),
-                    //     ]
-                    // ),
                     Padding(padding: EdgeInsets.only(top: 25.0)),
                     buildButton(),
-                    // Padding(padding: EdgeInsets.only(top: 25.0)),
-                    // _user == null ? Container() :
-                    // Text("Terima kasih, ${_user.name} dengan akun email ${_user.email}, atas feedback yang diberikan"),
                   ],
                 ),
               ),
@@ -282,42 +246,27 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
       nama = myController.text;
       email = myController2.text;
       komentar = myController3.text;
-      // final response = await getRequest.request.login(
-      //     "https://vaksinfo.herokuapp.com/authentication/feedbackjson",
-      //     jsonEncode(<String, String>{
-      //       'nama': nama,
-      //       'email': email,
-      //       'komentar': komentar,
-      //     }));
-      // print(response);
-
-
 
         if (loggedIn2) {
           print("MASUK");
-          // Kirim data ke json?
-          final UserModel user = await createUser(nama, email, komentar);
-          print("oke");
-          setState(() {
-            _user = user;
-          });
-          print(_user.name);
-          print(_user.email);
-          print(_user.comments);
 
           if (nama != "" && email != "" && komentar != "") {
             print('YES');
+
+            onAdd();
+
             final snackBar = SnackBar(
               duration: const Duration(seconds: 5),
               content: Text(
                   "Terima kasih atas feedback yang Anda berikan :)"),
               backgroundColor: Colors.green,
             );
-            ScaffoldMessenger.of(context)
+            ScaffoldMessenger.of(this.context)
                 .showSnackBar(snackBar);
             myController.clear();
             myController2.clear();
             myController3.clear();
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HasilFeedbackPage()),);
           } else {
             final snackBar = SnackBar(
               duration: const Duration(seconds: 5),
@@ -325,7 +274,7 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                   "Silakan isi feedback dengan lengkap."),
               backgroundColor: Colors.blue,
             );
-            ScaffoldMessenger.of(context)
+            ScaffoldMessenger.of(this.context)
                 .showSnackBar(snackBar);
           }
         } else {
@@ -336,7 +285,7 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                 "Silakan Login terlebih dahulu dengan menekan menu di samping."),
             backgroundColor: Colors.red,
           );
-          ScaffoldMessenger.of(context)
+          ScaffoldMessenger.of(this.context)
               .showSnackBar(snackBar);
           print("Gagal kirim feedback");
         }
