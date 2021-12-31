@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: container,
+      resizeToAvoidBottomInset: false,
       drawer: Drawer(
         child: SingleChildScrollView(
           child: Container(

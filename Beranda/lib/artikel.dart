@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'artikel_list.dart';
+import 'cookierequest.dart';
+import 'package:provider/provider.dart';
+import 'artikel_tambah.dart';
 
 class ArtikelPage extends StatelessWidget {
   const ArtikelPage({Key? key}) : super(key: key);
@@ -83,22 +86,36 @@ class _ArtikelListState extends State<ArtikelListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getRequest(),
-      builder: (BuildContext ctx, AsyncSnapshot snapshot) {
-        if (snapshot.data == null) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          List<Artikel> artikels = snapshot.data;
-          return ListView.builder(
-            itemCount: artikels.length,
-            itemBuilder: (ctx, index) =>
-                artikelListTile(artikels[index], context),
-          );
-        }
-      },
+    return Scaffold(
+      body: FutureBuilder(
+        future: getRequest(),
+        builder: (BuildContext ctx, AsyncSnapshot snapshot) {
+          if (snapshot.data == null) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            List<Artikel> artikels = snapshot.data;
+            return ListView.builder(
+              itemCount: artikels.length,
+              itemBuilder: (ctx, index) =>
+                  artikelListTile(artikels[index], context),
+            );
+          }
+        },
+      ),
+      floatingActionButton: context.watch<CookieRequest>().username == "admin"
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ArtikelTambahPage()));
+              },
+              backgroundColor: const Color(0xffff0000),
+              child: const Icon(Icons.add),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
