@@ -144,7 +144,7 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
     Widget cancelButton = TextButton(
       child: const Text("Cancel"),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       },
     );
 
@@ -153,7 +153,8 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
       onPressed: () {
         submit(context);
         int count = 0;
-        Navigator.of(context).popUntil((_) => count++ >= 1);
+        Navigator.of(context, rootNavigator: true)
+            .popUntil((_) => count++ >= 1);
         showAlertDialog(context);
       },
     );
@@ -184,7 +185,8 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
       child: const Text("OK"),
       onPressed: () {
         int count = 0;
-        Navigator.of(context).popUntil((_) => count++ >= 1);
+        Navigator.of(context, rootNavigator: true)
+            .popUntil((_) => count++ >= 1);
       },
     );
 
