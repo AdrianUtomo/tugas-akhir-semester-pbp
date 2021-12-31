@@ -1,7 +1,10 @@
 import 'package:beranda/info_vaksin_detail.dart';
+import 'package:beranda/infovaksin_comment.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'cookierequest.dart';
 
 class InfoVaksinPage extends StatelessWidget {
   const InfoVaksinPage({ Key? key }) : super(key: key);
@@ -67,8 +70,8 @@ class _InfoVaksinListState extends State<InfoVaksinList> {
 
   @override
   Widget build(BuildContext context) {
-
-    return FutureBuilder(
+    return Scaffold(
+    body: FutureBuilder(
       future: getVaksinData(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.data == null) {
@@ -109,6 +112,19 @@ class _InfoVaksinListState extends State<InfoVaksinList> {
           );
         }
       },
+    ),
+      floatingActionButton: context.watch<CookieRequest>().username != ""
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const InfovaksinCommentPage()));
+              },
+              backgroundColor: const Color(0xffff0000),
+              label: const Text("Ceritakan apa yang kamu rasakan"),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
