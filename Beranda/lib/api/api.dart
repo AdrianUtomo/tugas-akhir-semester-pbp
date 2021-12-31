@@ -13,20 +13,22 @@ class FeedbackProvider with ChangeNotifier {
     return[..._fb];
   }
 
+  // Mengirim feedback dari input user ke Django database (json format)
   void addFeedback(Feedback2 feedback2) async {
     final response = await http.post(Uri.parse(
-        'https://vaksinfo.herokuapp.com/authentication/json_fb?format=json'),
+        'https://vaksinfo.herokuapp.com/authentication/json'),
         headers: {"Content-Type":"application/json"},
         body: json.encode(feedback2));
         if (response.statusCode == 201) {
-          feedback2.id = json.decode(response.body)["id"];
+          // feedback2.id = json.decode(response.body)["id"];
           _fb.add(feedback2);
           notifyListeners();
         }
   }
 
+  // Mengambil data dari Django database (json format) untuk ditampilkan di UI
   fetchTasks() async {
-    final url = 'https://vaksinfo.herokuapp.com/authentication/json_fb?format=json';
+    final url = 'https://vaksinfo.herokuapp.com/authentication/json';
     final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       var data = json.decode(response.body) as List;
