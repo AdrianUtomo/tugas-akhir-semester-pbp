@@ -41,12 +41,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var currentPage = DrawerSections.dashboard;
-  int activeIndex = 0;
-  final urlImages = [
-    'assets/images/berita2.jpeg',
-    'assets/images/berita3.jpeg',
-    'assets/images/berita4.jpeg'
-  ];
 
   void logout() async {
     context.watch<CookieRequest>().clear();

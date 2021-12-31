@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:beranda/api/api.dart';
 import 'package:beranda/models/feedback.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -14,7 +16,6 @@ import 'hasil_feedback.dart';
 class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // return new MaterialApp(
     return ChangeNotifierProvider(
         create: (context) => FeedbackProvider(),
         child: MaterialApp(
@@ -41,9 +42,9 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
   String colorGroupValue = '';
   var loggedIn2 = Getter.finale;
 
-  final myController = TextEditingController();
-  final myController2 = TextEditingController();
-  final myController3 = TextEditingController();
+  TextEditingController myController = TextEditingController();
+  TextEditingController myController2 = TextEditingController();
+  TextEditingController myController3 = TextEditingController();
 
   String nama = "";
   String email = "";
@@ -56,7 +57,7 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
 
     if (textValName.isNotEmpty && textValEmail.isNotEmpty && textValComments.isNotEmpty) {
       final Feedback2 feedback2 = Feedback2(
-          id: 10,
+          // id: 10,
           name: textValName,
           email: textValEmail,
           comments: textValComments,
@@ -66,137 +67,157 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
     }
   }
 
+  final _formKey = GlobalKey<FormState>();
+  Future<void> submit(BuildContext context) async {
+    // var now = DateTime.now();
+    // var formatter = DateFormat('yyyy-MM-dd');
+    // String formattedDate = formatter.format(now);
+    final response = await http.post(
+        Uri.parse("https://vaksinfo.herokuapp.com/authentication/feedback_flutter"),
+        headers: <String, String>{'Content-Type': 'application/json'},
+        body: jsonEncode(<String, dynamic>{
+          'name': myController.text,
+          'email': myController2.text,
+          'comments': myController3.text,
+        }));
+    print("TEST========");
+    print(response.body);
+  }
+
   @override
   Widget build(BuildContext context) {
     var container;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              CarouselSlider.builder(
-                options: CarouselOptions(
-                  height: 400,
-                  viewportFraction: 1,
-                  autoPlay: true,
-                  pageSnapping: false,
-                  enableInfiniteScroll: false,
-                  enlargeCenterPage: true,
-                  enlargeStrategy: CenterPageEnlargeStrategy.height,
-                  autoPlayInterval: Duration(seconds: 3),
-                  onPageChanged: (index, reason) =>
-                      setState(() => activeIndex = index),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CarouselSlider.builder(
+                  options: CarouselOptions(
+                    height: 400,
+                    viewportFraction: 1,
+                    autoPlay: true,
+                    pageSnapping: false,
+                    enableInfiniteScroll: false,
+                    enlargeCenterPage: true,
+                    enlargeStrategy: CenterPageEnlargeStrategy.height,
+                    autoPlayInterval: Duration(seconds: 3),
+                    onPageChanged: (index, reason) =>
+                        setState(() => activeIndex = index),
+                  ),
+                  itemCount: urlImages.length,
+                  itemBuilder: (context, index,realIndex) {
+                    final urlImage = urlImages[index];
+                    return buildImage(urlImage, index);
+                  },
                 ),
-                itemCount: urlImages.length,
-                itemBuilder: (context, index,realIndex) {
-                  final urlImage = urlImages[index];
-                  return buildImage(urlImage, index);
-                },
-              ),
-              const SizedBox(height: 20),
-              buildIndicator(),
-              Container(
-                padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'Baca artikel lebih lanjut ',
-                      style: TextStyle(fontFamily: 'Montserrat'),
-                    ),
-                    SizedBox(width: 4.0),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ArtikelPage()),);
-                        currentPage = DrawerSections.artikel;
-                        container = ArtikelPage();
+                const SizedBox(height: 20),
+                buildIndicator(),
+                Container(
+                  padding: EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Baca artikel lebih lanjut ',
+                        style: TextStyle(fontFamily: 'Montserrat'),
+                      ),
+                      SizedBox(width: 4.0),
+                      InkWell(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => ArtikelPage()),);
+                          currentPage = DrawerSections.artikel;
+                          container = ArtikelPage();
 
-                      },
-                      child: Text(
-                        'di sini',
-                        style: TextStyle(
-                            color: Colors.red,
-                            fontFamily: 'Montserrat',
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
-                child: Center(
-                  child: Text(
-                    'Sekilas Mengenai VAKSINFO ',
-                    style: TextStyle(fontFamily: 'Montserrat', fontSize: 22, fontWeight: FontWeight.bold),
+                        },
+                        child: Text(
+                          'di sini',
+                          style: TextStyle(
+                              color: Colors.red,
+                              fontFamily: 'Montserrat',
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline),
+                        ),
+                      )
+                    ],
                   ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
-                child: Center(
-                  child: Text(
-                    'Vaksinfo adalah sebuah platform yang menyediakan berbagai macam informasi, diantaranya artikel atau berita terkait kondisi pandemi, informasi mengenai vaksin, baik lokasi penyelenggaraan vaksinasi berada, maupun pengetahuan mengeani jenis-jenis vaksin, dan data statistik yang terdiri dari jumlah vaksin yang telah diberikan kepada masyarakat, sasaran jumlah vaksinasi Covid-19 berdasarkan demografis, dan lain sebagainya. Selain itu, platform ini menyediakan fitur tanya jawab untuk melayani rasa keingintahuan pangguna.',
-                    style: TextStyle(fontFamily: 'Montserrat', fontSize: 15),
-                    textAlign: TextAlign.center,
+                Container(
+                  padding: EdgeInsets.only(top: 100.0, left: 20.0, right: 20.0),
+                  child: Center(
+                    child: Text(
+                      'Sekilas Mengenai VAKSINFO ',
+                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.only(top: 150.0, left: 20.0, right: 20.0),
-                child: Center(
-                  child: Text(
-                    'Feedback Form',
-                    style: TextStyle(fontFamily: 'Montserrat', fontSize: 22, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+                Container(
+                  padding: EdgeInsets.only(top: 10.0, left: 20.0, right: 20.0),
+                  child: Center(
+                    child: Text(
+                      'Vaksinfo adalah sebuah platform yang menyediakan berbagai macam informasi, diantaranya artikel atau berita terkait kondisi pandemi, informasi mengenai vaksin, baik lokasi penyelenggaraan vaksinasi berada, maupun pengetahuan mengeani jenis-jenis vaksin, dan data statistik yang terdiri dari jumlah vaksin yang telah diberikan kepada masyarakat, sasaran jumlah vaksinasi Covid-19 berdasarkan demografis, dan lain sebagainya. Selain itu, platform ini menyediakan fitur tanya jawab untuk melayani rasa keingintahuan pangguna.',
+                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 15),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.all(25.0),
-                child: Column(
-                  children: <Widget>[
-                    TextField(
-                      controller: myController,
-                      decoration: InputDecoration(
-                        hintText: "Masukkan nama Anda",
-                        labelText: "Nama",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
+                Container(
+                  padding: EdgeInsets.only(top: 150.0, left: 20.0, right: 20.0),
+                  child: Center(
+                    child: Text(
+                      'Feedback Form',
+                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 22, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                    Padding(padding: EdgeInsets.only(top: 25.0)),
-                    TextField(
-                      controller: myController2,
-                      decoration: InputDecoration(
-                        hintText: "Masukkan alamat e-mail Anda",
-                        labelText: "E-mail",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.only(top: 25.0)),
-                    TextField(
-                      maxLines: 10,
-                      controller: myController3,
-                      decoration: InputDecoration(
-                        hintText: "Ceritakan apa yang Anda alami",
-                        labelText: "Komentar",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.only(top: 25.0)),
-                    buildButton(),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                Container(
+                  padding: EdgeInsets.all(25.0),
+                  child: Column(
+                    children: <Widget>[
+                      TextField(
+                        controller: myController,
+                        decoration: InputDecoration(
+                          hintText: "Masukkan nama Anda",
+                          labelText: "Nama",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.only(top: 25.0)),
+                      TextField(
+                        controller: myController2,
+                        decoration: InputDecoration(
+                          hintText: "Masukkan alamat e-mail Anda",
+                          labelText: "E-mail",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.only(top: 25.0)),
+                      TextField(
+                        maxLines: 10,
+                        controller: myController3,
+                        decoration: InputDecoration(
+                          hintText: "Ceritakan apa yang Anda alami",
+                          labelText: "Komentar",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.only(top: 25.0)),
+                      buildButton(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -214,7 +235,6 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
       urlImage,
       fit: BoxFit.cover,
     ),
-
   );
 
   Widget buildIndicator() => AnimatedSmoothIndicator(
@@ -248,12 +268,9 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
       komentar = myController3.text;
 
         if (loggedIn2) {
-          print("MASUK");
-
           if (nama != "" && email != "" && komentar != "") {
-            print('YES');
-
-            onAdd();
+            // onAdd();
+            submit(context);
 
             final snackBar = SnackBar(
               duration: const Duration(seconds: 5),
@@ -278,7 +295,6 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
                 .showSnackBar(snackBar);
           }
         } else {
-          print('NO');
           final snackBar = SnackBar(
             duration: const Duration(seconds: 5),
             content: Text(
@@ -287,7 +303,6 @@ class _MyDashboardPageState extends State<MyDashboardPage> {
           );
           ScaffoldMessenger.of(this.context)
               .showSnackBar(snackBar);
-          print("Gagal kirim feedback");
         }
     },
   );
