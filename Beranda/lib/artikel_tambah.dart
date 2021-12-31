@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class ArtikelTambah extends StatelessWidget {
   const ArtikelTambah({Key? key}) : super(key: key);
@@ -29,15 +30,20 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
   TextEditingController slugField = TextEditingController();
 
   Future<void> submit(BuildContext context) async {
+    var now = DateTime.now();
+    var formatter = DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
     final response = await http.post(
         Uri.parse("https://vaksinfo.herokuapp.com/artikel/article_flutter"),
         headers: <String, String>{'Content-Type': 'application/json'},
         body: jsonEncode(<String, dynamic>{
           'title': titleField.text,
           'body': bodyField.text,
+          'pubDate': formattedDate,
           'imageUrl': imageUrlField.text,
           'slug': slugField.text,
         }));
+    print(response.body);
   }
 
   @override
@@ -138,7 +144,7 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
     Widget cancelButton = TextButton(
       child: const Text("Cancel"),
       onPressed: () {
-        Navigator.of(context).pop();
+        Navigator.of(context, rootNavigator: true).pop();
       },
     );
 
@@ -147,7 +153,8 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
       onPressed: () {
         submit(context);
         int count = 0;
-        Navigator.of(context).popUntil((_) => count++ >= 1);
+        Navigator.of(context, rootNavigator: true)
+            .popUntil((_) => count++ >= 1);
         showAlertDialog(context);
       },
     );
@@ -178,7 +185,8 @@ class ArtikelTambahState extends State<ArtikelTambahPage> {
       child: const Text("OK"),
       onPressed: () {
         int count = 0;
-        Navigator.of(context).popUntil((_) => count++ >= 1);
+        Navigator.of(context, rootNavigator: true)
+            .popUntil((_) => count++ >= 1);
       },
     );
 
