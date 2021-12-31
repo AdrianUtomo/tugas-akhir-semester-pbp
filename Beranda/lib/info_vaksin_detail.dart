@@ -52,7 +52,7 @@ class vaksinDetails extends StatelessWidget {
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: datas.syarat.map((data) => Text(data)).toList(),
+                      children: datas.syarat.map((data) => Text("- ${data}")).toList(),
                     ),
                     SizedBox(height: 20),
                     Text(
@@ -75,7 +75,7 @@ class vaksinDetails extends StatelessWidget {
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: datas.efek.map((data) => Text(data)).toList(),
+                      children: datas.efek.map((data) => Text("- ${data}")).toList(),
                     )
                   ],
                 ),

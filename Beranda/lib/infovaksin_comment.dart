@@ -91,9 +91,17 @@ class _InfovaksinCommentPageState extends State<InfovaksinCommentPage> {
                     ),
                     onPressed: () {
                       if (_formkey.currentState?.validate() ?? true) {
+                        final snackBar = SnackBar(
+                          duration: const Duration(seconds: 5),
+                          content: Text(
+                              "Berhasil menambahkan komentar, silakan lihat komentar anda di website Vaksinfo"),
+                          backgroundColor: Colors.green,
+                        );
                         submitComment(context);
                         nameField.clear();
                         contentField.clear();
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       }
                     },
                   )
